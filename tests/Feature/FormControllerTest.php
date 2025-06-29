@@ -25,4 +25,19 @@ class FormControllerTest extends TestCase
         ])->assertStatus(200);
     }
 
+    public function testFormFailed()
+    {
+        $this->post('/form', [
+            'username' => '',
+            'password' => '',
+        ])->assertStatus(302);
+    }
+
+    public function testFormSuccess()
+    {
+        $this->post('/form', [
+            'username' => 'admin',
+            'password' => 'rahasia',
+        ])->assertStatus(200);
+    }
 }
