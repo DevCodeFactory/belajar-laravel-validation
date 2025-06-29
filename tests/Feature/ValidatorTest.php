@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Rules\RegistrationRule;
 use App\Rules\Uppercase;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
@@ -205,7 +206,7 @@ class ValidatorTest extends TestCase
 
         $rules = [
             'username' => ['required', 'email', 'max:100', new Uppercase()],
-            'password' => ['required', 'min:6', 'max:20'],
+            'password' => ['required', 'min:6', 'max:20', new RegistrationRule()],
         ];
 
         $validator = Validator::make($data, $rules);
