@@ -12,6 +12,7 @@ use Illuminate\Validation\Rules\In;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
+use function PHPUnit\Framework\assertTrue;
 
 class ValidatorTest extends TestCase
 {
@@ -265,4 +266,64 @@ class ValidatorTest extends TestCase
         self::assertTrue($validator->passes());
         self::assertFalse($validator->fails());
     }
+
+    public function testNestedArray()
+    {
+        $data = [
+            'name' => [
+                'first' => 'Azdy',
+                'last' => 'Fahmi'
+            ],
+            'address' => [
+                'street' => 'Jalan Merpati',
+                'city' => 'Jakarta',
+                'country' => 'Indonesia',
+            ]
+        ];
+
+        $rules = [
+            'name.first' => ['required', 'max:100'],
+            'nama.last' => ['max:100'],
+            'address.street' => ['max:200'],
+            'address.city' => ['required', 'max:100'],
+            'address.country' => ['required', 'max:100'],
+        ];
+
+        $validator = Validator::make($data, $rules);
+        assertTrue($validator->passes());
+    }
+
+    public function testNestedIndexedArray()
+    {
+        $data = [
+            'name' => [
+                'first' => 'Azdy',
+                'last' => 'Fahmi'
+            ],
+            'address' => [
+                [
+                    'street' => 'Jalan Merpati',
+                    'city' => 'Jakarta',
+                    'country' => 'Indonesia',
+                ],
+                [
+                    'street' => 'Jalan Gagak',
+                    'city' => 'Jakarta',
+                    'country' => 'Indonesia',
+                ]
+            ]
+        ];
+
+        $rules = [
+            'name.first' => ['required', 'max:100'],
+            'nama.last' => ['max:100'],
+            'address.*.street' => ['max:200'],
+            'address.*.city' => ['required', 'max:100'],
+            'address.*.country' => ['required', 'max:100'],
+        ];
+
+        $validator = Validator::make($data, $rules);
+        assertTrue($validator->passes());
+    }
+
 }
