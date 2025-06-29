@@ -8,6 +8,8 @@ use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\In;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
@@ -246,4 +248,21 @@ class ValidatorTest extends TestCase
         Log::info($message->toJson(JSON_PRETTY_PRINT));
     }
 
+    public function testValidatorRuleClasses()
+    {
+        $data = [
+            'username' => 'Fahmi',
+            'password' => 'fahmi123@gmail.com',
+        ];
+
+        $rules = [
+            'username' => ['required', new In(['Fahmi', 'Alghi', 'Rama'])],
+            'password' => ['required', Password::min(6)->letters()->numbers()->symbols()]
+        ];
+
+        $validator = Validator::make($data, $rules);
+        self::assertNotNull($validator);
+        self::assertTrue($validator->passes());
+        self::assertFalse($validator->fails());
+    }
 }
