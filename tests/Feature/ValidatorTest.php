@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -82,6 +83,8 @@ class ValidatorTest extends TestCase
 
     public function testValidatorMultipleRules()
     {
+        App::setLocale('id');
+
         $data = [
             'username' => 'fahmi',
             'password' => 'fahmi',
@@ -128,6 +131,36 @@ class ValidatorTest extends TestCase
             $message = $exception->validator->errors();
             Log::error($message->toJson(JSON_PRETTY_PRINT));
         }
+    }
+
+    public function testValidatorInlineMessage()
+    {
+        $data = [
+            'username' => 'fahmi',
+            'password' => 'fahmi',
+        ];
+
+        $rules = [
+            'username' => 'required|email|max:100',
+            'password' => ['required', 'min:6', 'max:20'],
+        ];
+
+        $messages = [
+            'required' => ':attribute tidak boleh kosong.',
+            'email' => ':attribute harus berupa email.',
+            'min' => ':attribute minimal :min karakter.',
+            'max' => ':attribute maksimal :max karakter.',
+        ];
+
+        $validator = Validator::make($data, $rules, $messages);
+        self::assertNotNull($validator);
+        self::assertFalse($validator->passes());
+        self::assertTrue($validator->fails());
+
+        $message = $validator->getMessageBag();
+        self::assertIsArray($message->toArray());
+        self::assertJson($message->toJson());
+        Log::info($message->toJson(JSON_PRETTY_PRINT));
     }
 
 }
