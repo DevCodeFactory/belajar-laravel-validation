@@ -196,7 +196,7 @@ class ValidatorTest extends TestCase
 
     public function testValidatorCustomRule()
     {
-        App::setLocale('id');
+//        App::setLocale('id');
 
         $data = [
             'username' => 'fahmi@gmail.com',
